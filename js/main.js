@@ -58,7 +58,9 @@ function movePlayer() {
 
   if (keyPressed["KeyA"]) {
     player.x += -player.speed;
-  } 
+  } else if (player.x > 600) {
+    player.x = 600;
+  }
   if (keyPressed["KeyD"]) {
     player.x += player.speed;
   }

@@ -3,10 +3,14 @@
 // Falling object, user catches falling objects moving left and right, shift key makes user move faster
 // Gacha characters have special abilities after catching a certain amount of fruits
 // Every fruit = 10 gems, 160 for roll
+// every 10 pulls garunteed purple
+//  90 gold lol
 // If time, add user scores on side, save user scores
 // Show accuracy + score
 // Health bar
 // Space bar boost leaves trail
+// Add combo counter
+
 // Set Canvas Size
 canvasSize(700, 800);
 
@@ -19,6 +23,10 @@ let player = {
   speed: 10
 }
 
+let block = {
+  points: 300
+}
+
 // Blocks
 let blocks = initBlocks(50);
 
@@ -28,6 +36,7 @@ window.addEventListener("load", draw);
 function draw() {
   // LOGIC
   movePlayer();
+  // moveBlocks();
   catchBlocks();
 
   // DRAW
@@ -55,14 +64,16 @@ function movePlayer() {
   } else {
     player.speed = 10;
   }
-
-  if (keyPressed["KeyA"]) {
-    player.x += -player.speed;
+  
+  if (keyPressed["ArrowLeft"] || keyPressed["KeyA"]) {
+    player.x -= player.speed;
   } else if (player.x > 600) {
     player.x = 600;
   }
-  if (keyPressed["KeyD"]) {
+  if (keyPressed["ArrowRight"] || keyPressed["KeyD"]) {
     player.x += player.speed;
+  } else if (player.x < 0) {
+    player.x = 0;
   }
 }
 
@@ -87,7 +98,7 @@ function newRandomBlock() {
 
 // Draw all the blocks
 function drawBlocks() {
-  ctx.fillStyle = "green";
+  ctx.fillStyle = "red";
   for (let i = 0; i < blocks.length; i++) {
     drawBlock(blocks[i]);
   }

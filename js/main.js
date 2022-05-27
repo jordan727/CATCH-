@@ -10,7 +10,7 @@
 // Health bar
 // Space bar boost leaves trail
 // Add combo counter
-
+// Add abiltes (gold rush(all gold blocks for time), explode(blow up all blocks and get points for them), slow blocks)
 // Set Canvas Size
 canvasSize(700, 800);
 
@@ -23,26 +23,28 @@ let player = {
   speed: 10
 }
 
-let block = {
-  points: 300
-}
-
 // Blocks
-let blocks = initBlocks(50);
+let blocks = [];
+setInterval(addBlock, 500);
 
+let points = 0;
+let combo = 0;
+let n = 0;
 // Main Draw Loop
 window.addEventListener("load", draw);
 
 function draw() {
   // LOGIC
+  moveBlocks();
   movePlayer();
-  // moveBlocks();
   catchBlocks();
+  destroyBlock();
 
   // DRAW
   background();
   drawPlayer();
   drawBlocks();
+  drawCombo();
 
   requestAnimationFrame(draw);
 }
@@ -56,6 +58,12 @@ function background() {
 function drawPlayer() {
   ctx.strokeStyle = "white";
   ctx.strokeRect(player.x, player.y, player.w, player.h);
+}
+
+function moveBlocks() {
+  for (let i = 0; i < blocks.length; i++) {
+  blocks[i].y += blocks[i].speed;
+  }
 }
 
 function movePlayer() {
@@ -78,28 +86,55 @@ function movePlayer() {
 }
 
 // Initialize an array with n random blocks
-function initBlocks(n) {
-  let temp = [];
-  for (let num = 1; num <=n; num++) {
-    temp.push(newRandomBlock());
-  }
-  return temp;
+// function initBlocks(n) {
+//   let temp = [];
+//   for (let num = 1; num <=n; num++) {
+//     temp.push(newRandomBlock());
+//   }
+//   return temp;
+// }
+
+function addBlock() {
+  blocks.push(newRandomBlock());
 }
 
 // Return a random block
 function newRandomBlock() {
-  return {
-    x: Math.random() * cnv.width,
-    y: 0,
-    w: 15,
-    h: 15
+  r = randomDec(1, 10);
+  n++
+  if (r > 9) {
+    return {
+      x: Math.random() * cnv.width,
+      y: -40,
+      w: 30,
+      h: 30,
+      color: "gold",
+      speed: 4,
+      n: n,
+      points: 600
+    }
+  } else {
+    return {
+      x: Math.random() * cnv.width,
+      y: -40,
+      w: 30,
+      h: 30,
+      color: "red",
+      speed: 4,
+      n: n,
+      points: 300
+    }
   }
+}
+
+function drawCombo() {
+  text()
 }
 
 // Draw all the blocks
 function drawBlocks() {
-  ctx.fillStyle = "red";
   for (let i = 0; i < blocks.length; i++) {
+    ctx.fillStyle = blocks[i].color;
     drawBlock(blocks[i]);
   }
 }
@@ -113,8 +148,18 @@ function drawBlock(block) {
 function catchBlocks() {
   for (let i = 0; i < blocks.length; i++) {
     if (rectCollide(player, blocks[i])) {
+      points += blocks[i].points;
       blocks.splice(i, 1);
+      // add combo checker with number assigned to each block
       break;
+    }
+  }
+}
+
+function destroyBlock(aBlock) {
+  for (let i = 0; i < blocks.length; i++) {
+    if (blocks[i].y > cnv.height) {
+      blocks.splice(i, 1);
     }
   }
 }

@@ -17,7 +17,7 @@ canvasSize(700, 800);
 // Player Object
 let player = {
   x: 300,
-  y: 650,
+  y: 750,
   w: 100,
   h: 5,
   speed: 10
@@ -104,44 +104,48 @@ function newRandomBlock() {
   n++
   if (r > 9) {
     return {
-      x: Math.random() * cnv.width,
+      x: Math.random() * (cnv.width - 30),
       y: -40,
       w: 30,
       h: 30,
       color: "gold",
       speed: 4,
-      n: n,
+      num: n,
       points: 600
     }
   } else {
     return {
-      x: Math.random() * cnv.width,
+      x: Math.random() * (cnv.width - 30),
       y: -40,
       w: 30,
       h: 30,
       color: "red",
       speed: 4,
-      n: n,
+      num: n,
       points: 300
     }
   }
 }
 
 function drawCombo() {
-  text()
+  ctx.fillStyle = "white"
+  if (combo > 0){
+    text(combo + "x", 350, 100, "fill")
+  }
+  text(points, 15, 30, "fill")
 }
 
 // Draw all the blocks
 function drawBlocks() {
   for (let i = 0; i < blocks.length; i++) {
-    ctx.fillStyle = blocks[i].color;
     drawBlock(blocks[i]);
   }
 }
 
 // Draw a single block
 function drawBlock(block) {
-  ctx.fillRect(block.x, block.y, block.w, block.h);
+  ctx.fillStyle = block.color;
+  return ctx.fillRect(block.x, block.y, block.w, block.h);
 }
 
 // Check if player ate any blocks
@@ -149,6 +153,7 @@ function catchBlocks() {
   for (let i = 0; i < blocks.length; i++) {
     if (rectCollide(player, blocks[i])) {
       points += blocks[i].points;
+      combo++;
       blocks.splice(i, 1);
       // add combo checker with number assigned to each block
       break;
@@ -156,10 +161,11 @@ function catchBlocks() {
   }
 }
 
-function destroyBlock(aBlock) {
+function destroyBlock() {
   for (let i = 0; i < blocks.length; i++) {
     if (blocks[i].y > cnv.height) {
       blocks.splice(i, 1);
+      combo = 0;
     }
   }
 }

@@ -10,7 +10,9 @@
 // Health bar
 // Space bar boost leaves trail
 // Add combo counter
-// Add abiltes (gold rush(all gold blocks for time), explode(blow up all blocks and get points for them), slow blocks)
+// Add abiltes (gold rush(all gold blocks for time), explode(blow up all blocks and get points for them), slow blocks, 2x points, giant player)
+// Control Editor
+
 // Set Canvas Size
 canvasSize(700, 800);
 
@@ -22,31 +24,70 @@ let player = {
   h: 5,
   speed: 10
 }
-
+let blockInterval = null;
 // Blocks
 let blocks = [];
-setInterval(addBlock, 500);
-
 let points = 0;
+let started = false;
 let combo = 0;
-let n = 0;
+let highscore = 0;
+let missed = 0;
 // Main Draw Loop
 window.addEventListener("load", draw);
+window.addEventListener("blur", pauseGame)
 
 function draw() {
-  // LOGIC
-  moveBlocks();
-  movePlayer();
-  catchBlocks();
-  destroyBlock();
+  if (started == true) {
+    // LOGIC
+    moveBlocks();
+    movePlayer();
+    catchBlocks();
+    destroyBlock();
+    pauseGame();
+    highScore();
 
-  // DRAW
-  background();
-  drawPlayer();
-  drawBlocks();
-  drawCombo();
-
+    // DRAW
+    background();
+    drawPlayer();
+    drawBlocks();
+    drawText();
+    
+  } else if (started == false) {
+    startGame()
+  }
   requestAnimationFrame(draw);
+}
+
+function startGame() {
+  if (keyPressed["Space"]) {
+    started = true;
+    blockInterval = setInterval(addBlock, 500);
+  }
+}
+
+function pauseGame() {
+  if (started = true) {
+    if (keyPressed["Escape"]) {
+      started = false;
+      clearInterval(blockInterval);
+      ctx.fillStyle = "black"
+      ctx.fillRect(0, 0, cnv.width, cnv.height);
+      }
+  }
+}
+
+function resetGame() {
+
+}
+
+function endGame() {
+
+}
+
+function highScore() {
+if (points > highscore) {
+  highscore = points;
+}
 }
 
 // Helper Functions
@@ -64,6 +105,10 @@ function moveBlocks() {
   for (let i = 0; i < blocks.length; i++) {
   blocks[i].y += blocks[i].speed;
   }
+}
+
+function powerUp() {
+
 }
 
 function movePlayer() {
@@ -101,38 +146,34 @@ function addBlock() {
 // Return a random block
 function newRandomBlock() {
   r = randomDec(1, 10);
-  n++
-  if (r > 9) {
-    return {
-      x: Math.random() * (cnv.width - 30),
-      y: -40,
-      w: 30,
-      h: 30,
-      color: "gold",
-      speed: 4,
-      num: n,
-      points: 600
-    }
+  if (r > 9.8) {
+    return blockCreator("green", 0)
+  } else if (r > 9) {
+    return blockCreator("gold", 600)
   } else {
-    return {
-      x: Math.random() * (cnv.width - 30),
-      y: -40,
-      w: 30,
-      h: 30,
-      color: "red",
-      speed: 4,
-      num: n,
-      points: 300
-    }
+    return blockCreator("red", 300) 
   }
 }
 
-function drawCombo() {
+function blockCreator(color, points) {
+  return {
+    x: Math.random() * (cnv.width - 30),
+    y: -40,
+    w: 30,
+    h: 30,
+    color: color,
+    speed: 4,
+    points: points
+  }
+}
+
+function drawText() {
   ctx.fillStyle = "white"
   if (combo > 0){
     text(combo + "x", 350, 100, "fill")
   }
-  text(points, 15, 30, "fill")
+  text("Score: " + points, 15, 30, "fill")
+  text("Highscore: " + highscore, 15, 50, "fill")
 }
 
 // Draw all the blocks
@@ -155,7 +196,6 @@ function catchBlocks() {
       points += blocks[i].points;
       combo++;
       blocks.splice(i, 1);
-      // add combo checker with number assigned to each block
       break;
     }
   }
@@ -166,6 +206,7 @@ function destroyBlock() {
     if (blocks[i].y > cnv.height) {
       blocks.splice(i, 1);
       combo = 0;
+      missed++;
     }
   }
 }

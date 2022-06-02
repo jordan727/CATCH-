@@ -13,17 +13,24 @@
 // Add abiltes (gold rush(all gold blocks for time), explode(blow up all blocks and get points for them), slow blocks, 2x points, giant player)
 // Control Editor
 
+// Turn blocks into fruit
+// Add pixel graphics
+
 // Set Canvas Size
 canvasSize(700, 800);
 
 // Player Object
 let player = {
   x: 300,
-  y: 750,
+  y: 690,
   w: 100,
-  h: 5,
-  speed: 10
+  h: 25,
+  speed: 10,
+  img: "img/burd.jpg"
 }
+
+drawImage("img/burd.jpg", player.x, player.y);
+
 let blockInterval = null;
 // Blocks
 let blocks = [];
@@ -33,6 +40,7 @@ let combo = 0;
 let highscore = 0;
 let missed = 0;
 // Main Draw Loop
+text("Press Space to Start", 50, 150, "fill")
 window.addEventListener("load", draw);
 window.addEventListener("blur", pauseGame)
 
@@ -45,6 +53,7 @@ function draw() {
     destroyBlock();
     pauseGame();
     highScore();
+    lifeChecker();
 
     // DRAW
     background();
@@ -65,8 +74,12 @@ function startGame() {
   }
 }
 
+function countdown() {
+
+}
+
 function pauseGame() {
-  if (started = true) {
+  if (started == true) {
     if (keyPressed["Escape"]) {
       started = false;
       clearInterval(blockInterval);
@@ -81,13 +94,22 @@ function resetGame() {
 }
 
 function endGame() {
-
+  started = false;
+  clearInterval(blockInterval);
+  ctx.fillStyle = "black"
+  ctx.fillRect(0, 0, cnv.width, cnv.height);
 }
 
 function highScore() {
 if (points > highscore) {
   highscore = points;
 }
+}
+
+function lifeChecker() {
+  if (missed == 3) {
+    endGame()
+  }
 }
 
 // Helper Functions
@@ -98,7 +120,8 @@ function background() {
 
 function drawPlayer() {
   ctx.strokeStyle = "white";
-  ctx.strokeRect(player.x, player.y, player.w, player.h);
+  // ctx.strokeRect(player.x, player.y, player.w, player.h);
+  image("img/burd.jpg", player.x, player.y, player.w, player.h);
 }
 
 function moveBlocks() {
@@ -162,7 +185,7 @@ function blockCreator(color, points) {
     w: 30,
     h: 30,
     color: color,
-    speed: 4,
+    speed: 10,
     points: points
   }
 }
@@ -201,6 +224,7 @@ function catchBlocks() {
   }
 }
 
+// Check if a block reaches the bottom of the canvas
 function destroyBlock() {
   for (let i = 0; i < blocks.length; i++) {
     if (blocks[i].y > cnv.height) {

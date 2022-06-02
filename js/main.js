@@ -29,7 +29,7 @@ let player = {
   img: "img/burd.jpg"
 }
 
-drawImage("img/burd.jpg", player.x, player.y);
+image("img/burd.jpg", player.x, player.y, player.w, player.h);
 
 let blockInterval = null;
 // Blocks

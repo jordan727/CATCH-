@@ -25,11 +25,13 @@ let player = {
   y: 690,
   w: 100,
   h: 25,
-  speed: 10,
-  img: "img/burd.jpg"
+  speed: 10
 }
 
-image("img/burd.jpg", player.x, player.y, player.w, player.h);
+let brudImg = document.createElement("img");
+brudImg.src = "img/burd.jpg"
+let whatthedogdoin = document.createElement("img")
+whatthedogdoin.src = "img/dog.jpg"
 
 let blockInterval = null;
 // Blocks
@@ -39,12 +41,14 @@ let started = false;
 let combo = 0;
 let highscore = 0;
 let missed = 0;
+let lives = 3;
 // Main Draw Loop
 text("Press Space to Start", 50, 150, "fill")
 window.addEventListener("load", draw);
 window.addEventListener("blur", pauseGame)
 
 function draw() {
+  
   if (started == true) {
     // LOGIC
     moveBlocks();
@@ -121,7 +125,7 @@ function background() {
 function drawPlayer() {
   ctx.strokeStyle = "white";
   // ctx.strokeRect(player.x, player.y, player.w, player.h);
-  image("img/burd.jpg", player.x, player.y, player.w, player.h);
+  image(brudImg, player.x, player.y, player.w, player.h);
 }
 
 function moveBlocks() {
@@ -170,15 +174,15 @@ function addBlock() {
 function newRandomBlock() {
   r = randomDec(1, 10);
   if (r > 9.8) {
-    return blockCreator("green", 0)
+    return blockCreator(brudImg, "green", 0)
   } else if (r > 9) {
-    return blockCreator("gold", 600)
+    return blockCreator(whatthedogdoin, "gold", 600)
   } else {
-    return blockCreator("red", 300) 
+    return blockCreator(brudImg, "red", 300) 
   }
 }
 
-function blockCreator(color, points) {
+function blockCreator(img, color, points) {
   return {
     x: Math.random() * (cnv.width - 30),
     y: -40,
@@ -186,7 +190,8 @@ function blockCreator(color, points) {
     h: 30,
     color: color,
     speed: 10,
-    points: points
+    points: points,
+    img: img,
   }
 }
 
@@ -209,7 +214,7 @@ function drawBlocks() {
 // Draw a single block
 function drawBlock(block) {
   ctx.fillStyle = block.color;
-  return ctx.fillRect(block.x, block.y, block.w, block.h);
+  return image(block.img, block.x, block.y, block.w, block.h);
 }
 
 // Check if player ate any blocks
@@ -231,6 +236,7 @@ function destroyBlock() {
       blocks.splice(i, 1);
       combo = 0;
       missed++;
+      lives--;
     }
   }
 }
